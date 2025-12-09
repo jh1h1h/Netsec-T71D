@@ -1,0 +1,71 @@
+services:
+    attacker:
+        image: handsonsecurity/seed-ubuntu:large
+        container_name: seed-attacker
+        tty: true
+        cap_add:
+                - ALL
+        privileged: true
+        volumes:
+                - ./volumes:/volumes
+        network_mode: host
+        command: bash -c "
+                      apt update &&
+                      apt install -y nmap hydra &&
+                      tail -f /dev/null"
+
+    hostA:
+        image: handsonsecurity/seed-ubuntu:large
+        container_name: hostA-10.9.0.5
+        tty: true
+        cap_add:
+                - ALL
+        networks:
+            net-10.9.0.0:
+                ipv4_address: 10.9.0.5
+        command: bash -c "
+                      /etc/init.d/openbsd-inetd start &&
+                      
+                      apt update &&
+                      DEBIAN_FRONTEND=noninteractive apt install -y apache2 openssh-server vsftpd ufw &&
+                      
+                      a2enmod ssl &&
+                      a2ensite default-ssl &&
+                      echo '<h1>HTTP Server on Port 80</h1>' > /var/www/html/index.html &&
+                      service apache2 start &&
+                      
+                      service ssh start &&
+                      
+                      adduser --disabled-password --gecos '' ftpuser &&
+                      echo 'ftpuser:ftppass' | chpasswd &&
+                      mkdir -p /ftp_data &&
+                      chown ftpuser:ftpuser /ftp_data &&
+                      
+                      echo 'write_enable=YES' >> /etc/vsftpd.conf &&
+                      echo 'local_enable=YES' >> /etc/vsftpd.conf &&
+                      echo 'pasv_min_port=50000' >> /etc/vsftpd.conf &&
+                      echo 'pasv_max_port=51000' >> /etc/vsftpd.conf &&
+                      service vsftpd start &&
+                      
+                      tail -f /dev/null"
+
+    hostB:
+        image: handsonsecurity/seed-ubuntu:large
+        container_name: hostB-10.9.0.6
+        tty: true
+        cap_add:
+                - ALL
+        networks:
+            net-10.9.0.0:
+                ipv4_address: 10.9.0.6
+        command: bash -c "
+                      /etc/init.d/openbsd-inetd start  &&
+                      tail -f /dev/null
+                 "
+                  
+networks:
+    net-10.9.0.0:
+        name: net-10.9.0.0
+        ipam:
+            config:
+                - subnet: 10.9.0.0/24
