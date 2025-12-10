@@ -4,7 +4,7 @@ services:
             context: .
             dockerfile: Dockerfile.attacker
         image: labsetup-attacker
-        container_name: seed-attacker
+        # container_name: seed-attacker
         tty: true
         cap_add:
                 - ALL
