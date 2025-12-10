@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Resolve the directory of the script
+DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Determine OS
+OS="$(uname | tr '[:upper:]' '[:lower:]')"
+
+if [[ "$OS" == "linux" ]]; then
+    NATIVE_PATH="$DIR/lib/native/linux"
+elif [[ "$OS" == "darwin" ]]; then
+    NATIVE_PATH="$DIR/lib/native/darwin"
+else
+    echo "Unsupported OS: $OS"
+    exit 1
+fi
+
+# Run the fat JAR with the native library path
+java -Djava.library.path="$NATIVE_PATH" -jar "$DIR/aiids.jar" "$@"

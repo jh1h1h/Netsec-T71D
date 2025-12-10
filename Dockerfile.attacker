@@ -2,9 +2,6 @@ FROM handsonsecurity/seed-ubuntu:large
 
 # Update package lists and install tools
 RUN apt update && \
-    apt install -y nmap hydra && \
+    apt install -y nmap hydra slowhttptest python3-venv && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
-
-# Run attack commands in background and keep container running
-CMD bash -c "/attack_commands.sh & tail -f /dev/null"

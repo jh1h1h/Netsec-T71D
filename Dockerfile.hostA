@@ -3,6 +3,9 @@ FROM handsonsecurity/seed-ubuntu:large
 # Update package lists and install services
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install -y \
+    openjdk-8-jdk \
+    openjdk-8-jre \
+    libpcap-dev \
     apache2 \
     openssh-server \
     vsftpd && \

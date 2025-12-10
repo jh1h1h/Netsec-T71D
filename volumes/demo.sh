@@ -61,9 +61,8 @@ show_menu() {
     echo " 10) ssh-brute      - Both SSH brute force tools"
     echo ""
     echo " 11) dos-http       - HTTP DOS attack (GoldenEye)"
-    echo " 12) heartbleed     - Heartbleed SSL attack"
     echo ""
-    echo " 13) all            - Run ALL attacks (10s max each)"
+    echo " 12) all            - Run ALL attacks (10s max each)"
     echo ""
     echo "  q) quit           - Exit menu"
     echo ""
@@ -191,20 +190,6 @@ run_dos_http() {
     echo -e "${GREEN}[✓] HTTP DOS attack complete${NC}"
 }
 
-run_heartbleed() {
-    echo -e "${GREEN}[*] Running Heartbleed Attack...${NC}"
-    if [ ! -f /volumes/Heartbleed/heartbleed.py ]; then
-        echo -e "${RED}[!] Heartbleed script not found at /volumes/Heartbleed/heartbleed.py${NC}"
-        return
-    fi
-    if [ "$ALL_MODE" = true ]; then
-        timeout 10 python3 /volumes/Heartbleed/heartbleed.py https://$TARGET:443 2>&1 || echo -e "${YELLOW}[⏱] Timeout reached (10s)${NC}"
-    else
-        python3 /volumes/Heartbleed/heartbleed.py https://$TARGET:443
-    fi
-    echo -e "${GREEN}[✓] Heartbleed attack complete${NC}"
-}
-
 run_all_attacks() {
     ALL_MODE=true
     echo -e "${YELLOW}======================================${NC}"
@@ -250,9 +235,6 @@ run_all_attacks() {
     run_dos_http || { ALL_MODE=false; return; }
     sleep 2
     
-    echo -e "${BLUE}[10/10] Heartbleed Attack${NC}"
-    run_heartbleed || { ALL_MODE=false; return; }
-    
     ALL_MODE=false
     echo ""
     echo -e "${GREEN}======================================${NC}"
@@ -278,8 +260,7 @@ while true; do
         9) run_ssh_patator ;;
         10) run_ssh_hydra; sleep 5; run_ssh_patator ;;
         11) run_dos_http ;;
-        12) run_heartbleed ;;
-        13) run_all_attacks ;;
+        12) run_all_attacks ;;
         q|Q) echo -e "${GREEN}Exiting...${NC}"; exit 0 ;;
         *) echo -e "${RED}Invalid option. Please try again.${NC}" ;;
     esac
