@@ -1,1 +1,3 @@
-volumes/hydra.restore
+volumes
+*secret*
+*key*
